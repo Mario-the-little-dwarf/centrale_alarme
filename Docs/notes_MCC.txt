@@ -1,0 +1,5 @@
+Tools - > Plugins -> Add Plugins -> Install 
+File -> New Project (standalone) -> PIC18F47Q10 -> Next -> Pas de cartes (Next) Microchip Kit Starter Kit sinon PKOB4-> Sélectionne XC8 V1.45
+
+Ressource Management (MCC) Low Voltage Programming coché
+Generate 
