@@ -1,0 +1,285 @@
+/**
+  Generated Main Source File
+
+  Company:
+    Microchip Technology Inc.
+
+  File Name:
+    main.c
+
+  Summary:
+    This is the main file generated using PIC10 / PIC12 / PIC16 / PIC18 MCUs
+
+  Description:
+    This header file provides implementations for driver APIs for all modules selected in the GUI.
+    Generation Information :
+        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.65.2
+        Device            :  PIC18F47Q10
+        Driver Version    :  2.00
+*/
+
+/*
+    (c) 2018 Microchip Technology Inc. and its subsidiaries. 
+    
+    Subject to your compliance with these terms, you may use Microchip software and any 
+    derivatives exclusively with Microchip products. It is your responsibility to comply with third party 
+    license terms applicable to your use of third party software (including open source software) that 
+    may accompany Microchip software.
+    
+    THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS". NO WARRANTIES, WHETHER 
+    EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS SOFTWARE, INCLUDING ANY 
+    IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS 
+    FOR A PARTICULAR PURPOSE.
+    
+    IN NO EVENT WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
+    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY KIND 
+    WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF MICROCHIP 
+    HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE. TO 
+    THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL 
+    CLAIMS IN ANY WAY RELATED TO THIS SOFTWARE WILL NOT EXCEED THE AMOUNT 
+    OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS 
+    SOFTWARE.
+*/
+
+#include "mcc_generated_files/mcc.h"
+#include "mcc_generated_files/examples/i2c1_master_example.h"
+#define LCD_ADDRESS 0x3E 
+
+/*
+                         Main application
+ */
+void commande_LCD(uint8_t value);
+void write_LCD(uint8_t value);
+void configuration(void);
+void print_mat(int col);
+
+char clavier[4][4] = {{'1', '2', '3', 'A'},
+                        {'4', '5', '6', 'B'},
+                        {'7', '8', '9', 'C'},
+                        {'*', '0', '#', 'D'}};
+int overflow = 0; int pass = 1; int colonne = 0;
+uint8_t lat;
+
+void main(void)
+{
+    // Initialize the device
+    SYSTEM_Initialize();
+
+    // If using interrupts in PIC18 High/Low Priority Mode you need to enable the Global High and Low Interrupts
+    // If using interrupts in PIC Mid-Range Compatibility Mode you need to enable the Global and Peripheral Interrupts
+    // Use the following macros to:
+
+    // Enable the Global Interrupts
+    //INTERRUPT_GlobalInterruptEnable();
+
+    // Disable the Global Interrupts
+    //INTERRUPT_GlobalInterruptDisable();
+
+    // Enable the Peripheral Interrupts
+    //INTERRUPT_PeripheralInterruptEnable();
+
+    // Disable the Peripheral Interrupts
+    //INTERRUPT_PeripheralInterruptDisable();
+    char test = 'O';
+    char tab[] = "Salut";
+    
+//    int matrice[2][4] = {{RB0, RB1, RB2, RB3}, // 00 01 02 03  
+//                        {RB4, RB5, RB6, RB7}}; // 10 11 12 13
+   
+    /************Variables_Matrice**********/
+    int i = 0b0000;    
+    int adres = LATB >> 4;
+    int j = 0;
+    int raz = 20;
+    
+    //RB4 = 0;RB5 = 1;RB6 = 1; RB7 = 1; 
+
+    
+    //matrice[0][0] && matrice[1][0] -> clavier[0][0]
+    configuration();
+    while (1)
+    {
+        
+//        //colonne 1
+//        for(i=0b1111; i>0b0000; i--)
+//        {
+//            adres = ~(adres || i);//Inversion des 1 en 0
+//            LATB = (LATB>>4)||adres;
+////            for(int ligne=0; ligne<4; ligne++)
+////            {
+////                PORTB = PORTB << 4;
+////                if (PORTBbits.RB0){write_LCD(clavier[ligne][j]);__delay_ms(500);overflow++;}
+////            }
+//            
+//            if(PORTBbits.RB0==0){write_LCD(clavier[0][j]);__delay_ms(500);overflow++;}//Affiche 1
+//            if(PORTBbits.RB1==0){write_LCD(clavier[1][j]);__delay_ms(500);overflow++;}//Affiche 4
+//            if(PORTBbits.RB3==0){write_LCD(clavier[2][j]);__delay_ms(500);overflow++;}//Affiche 7
+//            if(PORTBbits.RB2==0){write_LCD(clavier[3][j]);__delay_ms(500);overflow++;}//Affiche *
+//            j++;
+//            
+//            if(j > 3){j=0;}//reset valeur j
+//        }
+
+        if(!RB4)
+        {
+            if(!RB0){write_LCD(clavier[0][0]);__delay_ms(20);overflow++;}//Affiche 1
+            if(!RB1){write_LCD(clavier[1][0]);__delay_ms(20);overflow++;}//Affiche 4
+            if(!RB3){write_LCD(clavier[2][0]);__delay_ms(20);overflow++;}//Affiche 7
+            if(!RB2){write_LCD(clavier[3][0]);__delay_ms(20);overflow++;}//Affiche *
+            LATB = 0b11011111;
+        }
+        
+        //colonne 2
+        //RB4 = 1; RB5 = 0; RB6 = 1; RB7 = 1;
+        if(!RB5)
+        {
+            if(!RB0){write_LCD(clavier[0][1]);__delay_ms(20);overflow++;}//Affiche 2
+            if(!RB1){write_LCD(clavier[1][1]);__delay_ms(20);overflow++;}//Affiche 5
+            if(!RB3){write_LCD(clavier[2][1]);__delay_ms(20);overflow++;}//Affiche 8
+            if(!RB2){write_LCD(clavier[3][1]);__delay_ms(20);overflow++;}//Affiche 0
+            LATB = 0b01111111;//LATB = 0b10111111;
+        }
+//        //colonne 3
+//        RB4 = 1; RB5 = 1; RB6 = 0; RB7 = 1;
+        if(!RB7) 
+        {
+            if(!RB0){write_LCD(clavier[0][2]);__delay_ms(20);overflow++;}//Affiche 3
+            if(!RB1){write_LCD(clavier[1][2]);__delay_ms(20);overflow++;}//Affiche 6
+            if(!RB3){write_LCD(clavier[2][2]);__delay_ms(20);overflow++;}//Affiche 9
+            if(!RB2){write_LCD(clavier[3][2]);__delay_ms(20);overflow++;}//Affiche #
+            LATB = 0b10111111;
+        }    
+        //colonne 4
+        //        RB4 = 0; RB5 = 1; RB6 = 1; RB7 = 0;
+        if(!RB6)
+        {
+            if(!RB0){write_LCD(clavier[0][3]);__delay_ms(20);overflow++;}//Affiche A
+            if(!RB1){write_LCD(clavier[1][3]);__delay_ms(20);overflow++;}//Affiche B
+            if(!RB3){write_LCD(clavier[2][3]);__delay_ms(20);overflow++;}//Affiche C
+            if(!RB2){write_LCD(clavier[3][3]);__delay_ms(20);overflow++;}//Affiche D
+            LATB = 0b11101111;
+        }
+        
+        if (overflow > 15){commande_LCD(0x01);overflow=0;}//Mettre a 1 pour clear
+        
+        //        commande_LCD(0x01);write_LCD(clavier[0][0]);__delay_ms(500);}//Affiche 1
+//            if(RB1==0){commande_LCD(0x01);write_LCD(clavier[0][1]);__delay_ms(500);}//Affiche 2
+//            if(RB3==0){commande_LCD(0x01);write_LCD(clavier[0][2]);__delay_ms(500);}//Affiche 3
+//            if(RB2==0){commande_LCD(0x01);write_LCD(clavier[0][3]);__delay_ms(500);}//Affiche A
+//            if(RB2==0){commande_LCD(0x01);write_LCD(clavier[0][3]);__delay_ms(500);}//Affiche A
+//        
+        
+        
+        //write_LCD('>');
+        /*
+        //ligne 1
+        if(matrice[0][0] && matrice[1][0]){write_LCD(clavier[0][0]);__delay_ms(50);}//Affiche 1
+        if(matrice[0][1] && matrice[1][0]){write_LCD(clavier[0][1]);__delay_ms(50);}//Affiche 2
+        if(matrice[0][2] && matrice[1][0]){clavier[0][2];}//Affiche 3
+        if(matrice[0][3] && matrice[1][0]){clavier[0][3];}//Affiche A
+        
+        //ligne 2
+        if(matrice[0][0] && matrice[1][1]){clavier[1][0];}//Affiche 4
+        if(matrice[0][1] && matrice[1][1]){clavier[1][1];}//Affiche 5
+        if(matrice[0][2] && matrice[1][1]){clavier[1][2];}//Affiche 6
+        if(matrice[0][3] && matrice[1][1]){clavier[1][3];}//Affiche B
+        
+        //ligne 3
+        if(matrice[0][0] && matrice[1][2]){clavier[2][0];}//Affiche 7
+        if(matrice[0][1] && matrice[1][2]){clavier[2][1];}//Affiche 8
+        if(matrice[0][2] && matrice[1][2]){clavier[2][2];}//Affiche 9
+        if(matrice[0][3] && matrice[1][2]){clavier[2][3];}//Affiche C
+        
+        //ligne 4
+        if(matrice[0][0] && matrice[1][3]){clavier[3][0];}//Affiche *
+        if(matrice[0][1] && matrice[1][3]){clavier[3][1];}//Affiche 0
+        if(matrice[0][2] && matrice[1][3]){clavier[3][2];}//Affiche #
+        if(matrice[0][3] && matrice[1][3]){clavier[3][3];}//Affiche D
+     */
+        
+        
+    /*
+     V2
+     *  if(RB0==0 || RB4==0){commande_LCD(0x01);write_LCD(clavier[0][0]);__delay_ms(500);write_LCD(RB0);__delay_ms(500);write_LCD(RB4);__delay_ms(500);}//Affiche 1
+        if(RB1==0 || RB4==0){commande_LCD(0x01);write_LCD(clavier[0][1]);__delay_ms(500);write_LCD(RB1);__delay_ms(500);write_LCD(RB4);__delay_ms(500);}//Affiche 2
+        if(!RB2 && !RB4){clavier[0][2];}//Affiche 3
+        if(!RB3 && !RB4){commande_LCD(0x01);write_LCD(clavier[0][3]);__delay_ms(500);}//Affiche A
+        
+        //ligne 2
+        if(RB0 && RB5){clavier[1][0];}//Affiche 4
+        if(RB1 && RB5){clavier[1][1];}//Affiche 5
+        if(RB2 && RB5){clavier[1][2];}//Affiche 6
+        if(RB3 && RB5){clavier[1][3];}//Affiche B
+        
+        //ligne 3
+        if(RB0 && RB6){clavier[2][0];}//Affiche 7
+        if(RB1 && RB6){clavier[2][1];}//Affiche 8
+        if(RB2 && RB6){clavier[2][2];}//Affiche 9s
+        if(RB3 && RB6){clavier[2][3];}//Affiche C
+        
+        //ligne 4
+        if(RB0 && RB7){clavier[3][0];}//Affiche *
+        if(RB1 && RB7){clavier[3][1];}//Affiche 0
+        if(RB2 && RB7){clavier[3][2];}//Affiche #
+        if(RB3 && RB7){clavier[3][3];}//Affiche D
+        
+     */
+        // Add your application code
+    }
+}
+
+void print_mat(int col)
+{
+    
+    if(RB0==0){write_LCD(clavier[0][col]);__delay_ms(500);overflow++;pass = 1;}//Affiche 1
+    if(RB1==0){write_LCD(clavier[1][col]);__delay_ms(500);overflow++;pass = 1;}//Affiche 4
+    if(RB3==0){write_LCD(clavier[2][col]);__delay_ms(500);overflow++;pass = 1;}//Affiche 7
+    if(RB2==0){write_LCD(clavier[3][col]);__delay_ms(500);overflow++;pass = 1;}//Affiche D
+    lat = (uint8_t) LATB >> 4;//on s'interesse seulement au sortie : les colonnes
+    if(pass){lat<<1;}//on decale de 1 colonne a chaque fois
+}
+
+void commande_LCD(uint8_t value)
+{
+ uint8_t transm[]= {0x00, 0x00};
+ transm[0] = 0x80;
+ transm[1] = value;
+ I2C1_WriteNBytes(LCD_ADDRESS, transm, 2);
+}
+
+void write_LCD(uint8_t value)
+{
+ uint8_t transm[]= {0x00, 0x00};
+ transm[0] = 0x40;
+ transm[1] = value;
+ I2C1_WriteNBytes(LCD_ADDRESS, transm, 2);
+} 
+
+
+void configuration(void)
+{
+    /*Config des pins*/
+    /*Re-Routage du module*/
+    SSP1CLKPPS = 0x13; //RC3->MSSP1:SCL1;
+    RC3PPS = 0x0F; //RC3->MSSP1:SCL1;
+    RC4PPS = 0x10; //RC4->MSSP1:SDA1;
+    SSP1DATPPS = 0x14; //RC4->MSSP1:SDA1; 
+
+    /*Initialisation I2C*/
+    I2C1_Initialize(); 
+    // Démarrage
+    commande_LCD(0x2C);
+    __delay_ms(100);
+    commande_LCD(0x2C);
+    __delay_ms(100);
+    commande_LCD(0x2C);
+    __delay_ms(100);
+    commande_LCD(0x2C);
+    __delay_ms(100);
+    // ecran curseur clignotant, etc...
+    commande_LCD(0x0F);
+    __delay_ms(1000);
+    // effacer l'écran
+    commande_LCD(0x01);
+    
+}
